@@ -108,7 +108,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                       349 (POST http://349assistant.com/getLatestOrder)
                     */
     //
-            guard var URL = URL(string: "https://www.heyuegendan.com/getprice.php?symbol=ETHUSDT") else {return}
+            guard var URL = URL(string: "https://www.heyuegendan.com/getprice.php?symbol=BTCUSDT") else {return}
                    //guard var URL = URL(string: "http://349assistant.com/getLatestOrder") else {return}
 //                   let URLParams = [
 //                       "id": "24",
@@ -132,9 +132,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         if let data = data{
                                 let newStr = String(data: data, encoding: String.Encoding.utf8)
                                 //self.log(log: newStr ?? "")
-                            DispatchQueue.main.async {
-                                self.prtxt?.stringValue = newStr ?? ""
-                            }
+                                
+                                do {
+                                        let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                                        if let jsonDict = jsonObject as? [String: Any] {
+                                            let newStr = jsonDict["markPrice"] as? String ?? ""
+                                            
+                                            DispatchQueue.main.async {
+                                                self.prtxt?.stringValue = "$\(newStr)"
+                                            }
+                                            
+                                            
+                                        }
+                                    } catch {
+                                        print("Error parsing JSON: \(error.localizedDescription)")
+                                    }
+                                
                             
                         }
                         
